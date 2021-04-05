@@ -51,7 +51,7 @@ betterDoubleList = multiplyList 2
 
 applyToInteger :: (Integer -> Integer) -> [Integer] -> [Integer]
 applyToInteger _ [] = []
-applyToInteger f (n : ns) = (f n) : (applyToInteger f ns)
+applyToInteger f (n : ns) = f n : applyToInteger f ns
 
 betterMultiplyList :: Integer -> [Integer] -> [Integer]
 betterMultiplyList m = applyToInteger ((*) m)
@@ -60,7 +60,7 @@ betterMultiplyList m = applyToInteger ((*) m)
 
 myMap :: (a -> b) -> [a] -> [b]
 myMap _ [] = []
-myMap f (x : xs) = (f x) : myMap f xs
+myMap f (x : xs) = f x : myMap f xs
 
 multiplyListUsingMap :: Integer -> [Integer] -> [Integer]
 multiplyListUsingMap m = map ((*) m)
@@ -105,10 +105,10 @@ myFoldl1 _ [] = error "myFoldl1: empty list"
 -- 2.3.2
 
 echoesFoldr :: [Int] -> [Int]
-echoesFoldr = foldr (\x xs -> (replicate x x) ++ xs) []
+echoesFoldr = foldr (\x xs -> replicate x x ++ xs) []
 
 echoesFoldl :: [Int] -> [Int]
-echoesFoldl = foldl (\xs x -> xs ++ (replicate x x)) []
+echoesFoldl = foldl (\xs x -> xs ++ replicate x x) []
 
 mapFold f = foldr (\x xs -> f x : xs) []
 
@@ -117,8 +117,8 @@ mapFold f = foldr (\x xs -> f x : xs) []
 badRetainEven :: [Int] -> [Int]
 badRetainEven [] = []
 badRetainEven (n : ns) =
-  if ((mod n 2) == 0)
-    then n : (badRetainEven ns)
+  if (mod n 2) == 0
+    then n : badRetainEven ns
     else badRetainEven ns
 
 retainEven = filter even
@@ -140,7 +140,7 @@ somePairs = [(x, y) | x <- [1 .. 4], y <- [5 .. 8], x + y > 8]
 -- 2.4.1
 
 data Anniversary
-  = Birthday String Int Int Int -- name, year, month, day
+  = Birthday Name Int Int Int -- name, year, month, day
   | Wedding String String Int Int Int -- spouse name 1, spouse name 2, year, month, day
 
 johnSmith :: Anniversary
@@ -203,7 +203,7 @@ f1 2 = 2
 f1 _ = 1
 
 g1 :: [Int] -> Bool
-g1 (0 : []) = False
+g1 [0] = False
 g1 (0 : xs) = True
 g1 _ = False
 
@@ -360,8 +360,28 @@ quickSort :: (Ord a) => [a] -> [a]
 -- Base case
 quickSort [] = []
 -- Recursion case
-quickSort (x : xs) = (quickSort less) ++ (x : equal) ++ (quickSort more)
+quickSort (x : xs) = quickSort less ++ (x : equal) ++ quickSort more
   where
     less = filter (< x) xs
     equal = filter (== x) xs
     more = filter (> x) xs
+
+-- 2.8.3
+
+quickSortHighOrder :: (Ord a) => (a -> a -> Ordering) -> [a] -> [a]
+--Base case
+quickSortHighOrder _ [] = []
+-- Recursion case
+quickSortHighOrder compare (x : xs) =
+  quickSortHighOrder compare less
+    ++ (x : equal)
+    ++ quickSortHighOrder compare more
+  where
+    less = filter (\y -> y `compare` x == LT) xs
+    equal = filter (\y -> y `compare` x == EQ) xs
+    more = filter (\y -> y `compare` x == GT) xs
+
+-- 2.8.5
+
+myInits :: [a] -> [[a]]
+myInits = map reverse . scanl (flip (:)) []
