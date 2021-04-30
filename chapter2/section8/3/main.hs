@@ -10,3 +10,8 @@ quickSortHighOrder compare (x : xs) =
     less = filter (\y -> y `compare` x == LT) xs
     equal = filter (\y -> y `compare` x == EQ) xs
     more = filter (\y -> y `compare` x == GT) xs
+
+compareRev x y
+  | x > y = LT
+  | x == y = EQ
+  | x < y = GT
