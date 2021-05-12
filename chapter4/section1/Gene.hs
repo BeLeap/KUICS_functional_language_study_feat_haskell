@@ -1,4 +1,4 @@
-data Person = Person {name :: String, age :: Int, father :: Person, mother :: Person}
+data Person = Person {name :: String, age :: Int, father :: Person, mother :: Person} deriving (Eq)
 
 instance Show Person where
   show Person {name = name, age = age} = name ++ " " ++ show age
@@ -20,10 +20,10 @@ p6 = Person {name = "person6", age = 45, father = p3, mother = p4}
 p7 = Person {name = "person7", age = 20, father = p5, mother = p6}
 
 getFather :: Person -> Maybe Person
-getFather Person {father = father} = Just father
+getFather Person {father = father} = if father == empty then Nothing else Just father
 
 getMother :: Person -> Maybe Person
-getMother Person {mother = mother} = Just mother
+getMother Person {mother = mother} = if mother == empty then Nothing else Just mother
 
 badMaternalGrandfather :: Person -> Maybe Person
 badMaternalGrandfather p =
@@ -63,6 +63,8 @@ bothGrandfather p =
                             )
                   )
         )
+
+anotherGrandfather p = getFather p >>= \dad -> getFather dad >>= \gf1 -> getMother p >>= \mom -> getFather mom >>= \gf2 -> return (gf1, gf2)
 
 betterBothGrandfather :: Person -> Maybe (Person, Person)
 betterBothGrandfather p = do

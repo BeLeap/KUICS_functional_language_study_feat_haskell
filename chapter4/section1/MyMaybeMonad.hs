@@ -1,7 +1,7 @@
-data MyMaybe a = MyJust a | MyNothing
+data MyMaybe a = MyJust a | MyNothing deriving (Show)
 
-return :: a -> MyMaybe a
-return = MyJust
+myReturn :: a -> MyMaybe a
+myReturn = MyJust
 
 (>>=) :: MyMaybe a -> (a -> MyMaybe b) -> MyMaybe b
 m >>= g = case m of
